@@ -13,7 +13,10 @@ class ROAMImpl {
 		void update_priority(struct tri &triangle);
 		void add_active_tri(const struct tri &triangle);
 		void remove_active_tri(const struct tri &triangle);
+		//Build a new split queue from the active triangles
 		void construct_split_queue();
+		//Recursively split a triangle
+		void force_split(const struct tri &triangle);
 };
 
 #endif
