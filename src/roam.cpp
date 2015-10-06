@@ -9,11 +9,11 @@ ROAMImpl::update_priority(struct tri &triangle) {
 	//Update the triangle's priority based on error metrics
 }
 
-ROAMImpl::add_active_tri(const struct tri &triangle) {
+ROAMImpl::add_active_tri(const struct tri *triangle) {
 	active_triangles.push(triangle);
 }
 
-ROAMImpl::remove_active_tri(const struct tri &triangle) {
+ROAMImpl::remove_active_tri(const struct tri *triangle) {
 	//Remove triangle from active triangles vector
 	//No need to remove from priority queue
 }
@@ -24,23 +24,23 @@ ROAMImpl::construct_split_queue() {
 	//clear priority_queue
 	
 	for (std::vector<struct tri>::size_type i = 0; i < active_triangles.size(); i++) {
-		priority_queue.push(&(active_triangles[i]));
+		priority_queue.push(active_triangles[i]);
 	}
 }
 
-ROAMImpl::force_split(const struct tri &triangle) {
+ROAMImpl::force_split(const struct tri *triangle) {
 	remove_active_tri(triangle);
 
 	//There will always be an adjacent triangle that needs to be split.
 	//Get the adjacent triangle.
 	struct tri *adjacent_triangle;
 
-	if (edges_equivanelt(triangle.v0, triangle.v1, adjacent_triangle->v0,
+	if (edges_equivanelt(triangle->v0, triangle->v1, adjacent_triangle->v0,
 			adjacent_triangle->v1) {
 		//Single split, no recursion
 	} else {
 		//Recursively split
-		force_split(*adjacent_triangle);
+		force_split(adjacent_triangle);
 		
 		//Then do a single split on the new adjacent triangle.
 		//Exactly one split here is always required.
