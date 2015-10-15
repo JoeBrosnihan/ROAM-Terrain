@@ -21,6 +21,8 @@ class ROAMImpl {
 		void remove_active_tri(const struct tri &triangle);
 		//Build a new split queue from the active triangles
 		void construct_split_queue();
+		//Split a single triangle
+		void single_split(const struct tri &triangle);
 		//Recursively split a triangle
 		void force_split(const struct tri &triangle);
 };
