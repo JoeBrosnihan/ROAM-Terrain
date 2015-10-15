@@ -6,7 +6,7 @@ inline bool edges_equivalent(vec3 a1, vec3 a2, vec3 b1, vec3 b2) {
 }
 
 ROAMImpl::update_priority(struct tri &triangle) {
-	//Update the triangle's priority based on error metrics
+	//TODO Update the triangle's priority based on error metrics
 }
 
 ROAMImpl::add_active_tri(const struct tri *triangle) {
@@ -28,6 +28,14 @@ ROAMImpl::construct_split_queue() {
 	}
 }
 
+single_split(const struct tri *triangle) {
+	remove_active_tri(triangle);
+	add_active_tri(triangle->tri0);
+	priority_queue.push(triangle->tri0);
+	add_active_tri(triangle->tri1);
+	priority_queue.push(triangle->tri1);
+}
+
 ROAMImpl::force_split(const struct tri *triangle) {
 	remove_active_tri(triangle);
 
@@ -38,7 +46,9 @@ ROAMImpl::force_split(const struct tri *triangle) {
 	if (edges_equivanelt(triangle->v0, triangle->v1, adjacent_triangle->v0,
 			adjacent_triangle->v1) {
 		//Single split, no recursion
+		single_split(adjacent_triangle);
 	} else {
+		
 		//Recursively split
 		force_split(adjacent_triangle);
 		
