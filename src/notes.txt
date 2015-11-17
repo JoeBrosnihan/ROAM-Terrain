@@ -1,0 +1,15 @@
+
+Data Structures:
+- Priority Queue of LPT Codes for triangles to split
+- List of Triangles to render
+- Hash Map of LPT Codes to Triangles
+
+Need mappings:
+LPT Code -> is triangle Active
+LPT Code -> relative x, y (this mapping is a function)
+relative x, y -> world coordinates
+relative x, y -> height
+
+Need lists:
+All active triangles/LPT Codes (?)
+
