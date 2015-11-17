@@ -3,7 +3,7 @@
 
 #include "roam.hpp"
 
-//A ROAM implementation that is specific to terrains specified by heightmaps
+//This extension of the ROAM class is specific to 
 class ROAMTerrainImpl : ROAMImpl {
 	public:
 		//Load the mesh of a terrain from the given heightmap
