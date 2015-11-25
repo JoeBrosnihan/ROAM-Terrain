@@ -11,14 +11,13 @@ class ROAMImpl {
 		//Store only triangles currently rendered
 		std::vector<struct lptcode> active_triangles;
 		
-	private:
 		//Store all active lptcodes
 		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
 				active_lpts;
 
 		//Split lowest priority triangle in the split_queue
 		//Initialize queue with a comparator that compares triangle priority
-		std::priority_queue<struct lptcode> split_queue; //TODO Make comparator
+		//std::priority_queue<struct lptcode> split_queue; //TODO Make comparator
 		
 		void add_active_lpt(const struct lptcode &lpt);
 		void remove_active_lpt(const struct lptcode &lpt);
