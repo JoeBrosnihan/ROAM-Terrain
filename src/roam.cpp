@@ -54,15 +54,28 @@ void ROAMImpl::construct_split_queue() {
 };
 
 void ROAMImpl::single_split(const struct lptcode &lpt) {
+	int new_len = lpt.len_p + 1;
+
+	struct lptcode sub0;
+	sub0.len_p = new_len;
+	sub0.l = new_len % 2;
+	sub0.permutation[0] = lpt.permutation[0];
+	sub0.permutation[1] = lpt.permutation[1];
+	add_active_lpt(sub0);
+
+	struct lptcode sub1;
+	sub1.len_p = new_len;
+	sub1.l = new_len % 2;
+	if (lpt.l == 0) {
+		sub1.permutation[0] = -lpt.permutation[1];
+		sub1.permutation[1] = lpt.permutation[0];
+	} else {
+		sub1.permutation[0] = lpt.permutation[0];
+		sub1.permutation[1] = -lpt.permutation[1];
+	}
+	add_active_lpt(sub1);
+	
 	remove_active_lpt(lpt);
-
-/*	TODO implement with lpts
-	add_active_tri(triangle->tri0);
-	priority_queue.push(triangle->tri0);
-
-	add_active_tri(triangle->tri1);
-	priority_queue.push(triangle->tri1);
-*/
 };
 
 void ROAMImpl::force_split(const struct lptcode &lpt) {
