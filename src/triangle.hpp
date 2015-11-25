@@ -37,6 +37,24 @@ struct lptcode {
 	//list of orthants (always +/-1, +/-1)
 	//n orthants = floor(|p| / 2)
 	int orthant_list[MAX_LOD * 2];
+
+	bool operator==(const struct lptcode &rhs) const {
+		bool equal = (len_p == rhs.len_p) && (permutation[0]
+				== rhs.permutation[0]) && (permutation[1]
+				== rhs.permutation[1]);
+		if (!equal)
+			return false;
+		int n_orthants = len_p / 2;
+		for (int i = 0; i < n_orthants; i++) {
+			equal = (orthant_list[2 * i] ==
+					rhs.orthant_list[2 * i]) &&
+					(orthant_list[2 * i + 1] ==
+					rhs.orthant_list[2 * i + 1]);
+			if (!equal)
+				return false;
+		}
+		return true;
+	}
 };
 
 struct LPTHasher {
