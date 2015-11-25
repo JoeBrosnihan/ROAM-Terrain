@@ -8,10 +8,10 @@
 
 class ROAMImpl {
 	public:
-	private:
 		//Store only triangles currently rendered
 		std::vector<struct lptcode> active_triangles;
 		
+	private:
 		//Store all active lptcodes
 		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
 				active_lpts;
