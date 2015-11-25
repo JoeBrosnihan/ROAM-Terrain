@@ -2,6 +2,7 @@
 #define ROAM_HPP
 
 #include <queue>
+#include <unordered_map>
 
 #include "triangle.hpp"
 
@@ -12,7 +13,8 @@ class ROAMImpl {
 		std::vector<struct lptcode> active_triangles;
 		
 		//Store all active lptcodes
-		std::unordered_map<struct lptcode, struct lptcode> active_lpts;
+		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
+				active_lpts;
 
 		//Split lowest priority triangle in the split_queue
 		//Initialize queue with a comparator that compares triangle priority

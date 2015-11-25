@@ -2,6 +2,7 @@
 #define TRIANGLE_HPP
 
 #include <tuple>
+#include <functional>
 
 #include "vec3.hpp"
 
@@ -23,7 +24,7 @@ struct tri {
 		else
 			return false;
 	}
-}
+};
 
 //A code that describes a triangle
 struct lptcode {
@@ -36,12 +37,15 @@ struct lptcode {
 	//list of orthants (always +/-1, +/-1)
 	//n orthants = floor(|p| / 2)
 	int orthant_list[MAX_LOD * 2];
+};
 
-	int get_len_p() { return len_p; }
-	int get_l() { return l; }
-	int get_permutation { return permutation; }
-	int get_orthant_list { return orthant_list; }
-}
+struct LPTHasher {
+	size_t operator()(const struct lptcode &lpt) const {
+		size_t hash = 0;
+		hash += std::hash<int>()(lpt.len_p);
+		return hash;
+	}
+};
 
 std::tuple<float, float> get_xy_from_lpt(struct lptcode lpt);
 
