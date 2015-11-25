@@ -1,5 +1,6 @@
-
 #include "roam.hpp"
+
+#include <algorithm>
 
 /*
 //child = 0 or 1
@@ -23,13 +24,28 @@ struct lptcode get_subtriangle(const struct &lpt, int child) {
 */
 
 void ROAMImpl::add_active_lpt(const struct lptcode &lpt) {
-//	active_lpts[lpt] = lpt;
+	active_triangles.push_back(lpt);
+	active_lpts[lpt] = lpt;
 	//No need to add to priority queue here - it is rebuilt every frame
 };
 
 void ROAMImpl::remove_active_lpt(const struct lptcode &lpt) {
-//	active_lpts.erase(lpt);
+	active_lpts.erase(lpt);
+	
+	auto it = std::find(active_triangles.begin(), active_triangles.end(),
+			lpt);
+	if (it != active_triangles.end())
+		active_triangles.erase(it);
+
+	//TODO optimization http://stackoverflow.com/questions/39912/how-do-i-remove-an-item-from-a-stl-vector-with-a-certain-value
+/*
+	for (std::vector<struct lptcode>::size_type it =
+			active_triangles.begin();
+			i < active_triangles.size(); i++) {
+                priority_queue.push(active_triangles[i]);
+        }
 	//No need to remove from priority queue
+*/
 };
 
 //Build a new split queue from the active triangles
