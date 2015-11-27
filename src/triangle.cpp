@@ -1,9 +1,7 @@
-
 #include "triangle.hpp"
 
-std::tuple<float, float> get_xy_from_lpt(struct lptcode lpt) {
-	
-}
+#include <utility>
+
 
 void compute_orthant(int *result, int *permutation) {
 	//Apply the permutation transformation matrix to the orthant (1, 1).
