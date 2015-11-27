@@ -1,6 +1,7 @@
 #include "roam.hpp"
 
 #include <algorithm>
+#include <cstring>
 
 /*
 //child = 0 or 1
@@ -54,6 +55,8 @@ void ROAMImpl::construct_split_queue() {
 };
 
 void ROAMImpl::single_split(const struct lptcode &lpt) {
+	//TODO handle hitting max lod
+	int n_orthants = lpt.len_p / 2;
 	int new_len = lpt.len_p + 1;
 
 	struct lptcode sub0;
@@ -61,6 +64,12 @@ void ROAMImpl::single_split(const struct lptcode &lpt) {
 	sub0.l = new_len % 2;
 	sub0.permutation[0] = lpt.permutation[0];
 	sub0.permutation[1] = lpt.permutation[1];
+	memcpy(sub0.orthant_list, lpt.orthant_list,
+			sizeof(int) * n_orthants * 2);
+	if (sub0.l == 0)
+		compute_orthant(sub0.orthant_list + n_orthants * 2,
+				sub0.permutation);
+
 	add_active_lpt(sub0);
 
 	struct lptcode sub1;
@@ -73,6 +82,11 @@ void ROAMImpl::single_split(const struct lptcode &lpt) {
 		sub1.permutation[0] = lpt.permutation[0];
 		sub1.permutation[1] = -lpt.permutation[1];
 	}
+	memcpy(sub1.orthant_list, lpt.orthant_list,
+			sizeof(int) * n_orthants * 2);
+	if (sub1.l == 0)
+		compute_orthant(sub1.orthant_list + n_orthants * 2,
+				sub1.permutation);
 	add_active_lpt(sub1);
 	
 	remove_active_lpt(lpt);

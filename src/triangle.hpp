@@ -66,5 +66,8 @@ struct LPTHasher {
 };
 
 std::tuple<float, float> get_xy_from_lpt(struct lptcode lpt);
+//Computes the orthant of a given permutation and stores it in the result array
+//result must have space for 2 integers.
+void compute_orthant(int *result, int *permutation);
 
 #endif

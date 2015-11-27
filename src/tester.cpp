@@ -32,7 +32,15 @@ int main(int argc, char *argv[]) {
 	base_simplex.permutation[1] = 2;
 	
 	roam.add_active_lpt(base_simplex);
-
+	print_active_lpts(roam);
+	printf("\n");
+	roam.single_split(base_simplex);
+	print_active_lpts(roam);
+	printf("\n");
+	roam.single_split(roam.active_triangles[0]);
+	print_active_lpts(roam);
+	printf("\n");
+	roam.single_split(roam.active_triangles[0]);
 	print_active_lpts(roam);
 }
 
