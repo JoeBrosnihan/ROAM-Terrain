@@ -53,12 +53,12 @@ int main(int argc, char *argv[]) {
 
 	printf("Neighbor 0 simplex:\n");
 	struct lptcode nbor0;
-	neighbor(&nbor0, target, 0);
+	neighbor_lpt(&nbor0, target, 0);
 	print_lpt(nbor0);
 
 	printf("Neighbor 1 simplex:\n");
 	struct lptcode nbor1;
-	neighbor(&nbor1, target, 1);
+	neighbor_lpt(&nbor1, target, 1);
 	print_lpt(nbor1);
 }
 

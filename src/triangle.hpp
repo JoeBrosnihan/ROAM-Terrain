@@ -72,6 +72,6 @@ struct LPTHasher {
 void compute_orthant(int *result, int *permutation);
 
 //Computes the neighbor N(neighbor)(lpt)
-bool neighbor(struct lptcode *result, const struct lptcode &lpt, int neighbor);
+bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor);
 
 #endif

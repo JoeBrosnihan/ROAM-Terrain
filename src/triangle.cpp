@@ -18,7 +18,7 @@ void compute_orthant(int *result, int *permutation) {
 
 //returns true if neighbor exists within bounds, false otherwise
 //If neighbor exists, neighbor lpt code is stored in *result.
-bool neighbor(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
+bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
 	result->len_p = lpt.len_p;
 	result->l = lpt.l;
 
