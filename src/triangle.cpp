@@ -2,7 +2,7 @@
 
 #include <utility>
 #include <cstdlib>
-
+#include <cassert>
 
 void compute_orthant(int *result, int *permutation) {
 	//Apply the permutation transformation matrix to the orthant (1, 1).
@@ -57,6 +57,7 @@ bool neighbor(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
 			result->permutation[1] = lpt.permutation[0];
 		} else if (neighbor == 2) {
 			//not used
+			assert(false);
 		}
 	} else if (childtype == 1) {
 		if (neighbor == 0) {
@@ -79,6 +80,7 @@ bool neighbor(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
 			result->permutation[1] = lpt.permutation[0];
 		} else if (neighbor == 2) { // and neighbor != l*
 			//not used
+			assert(false);
 		}
 	}
 

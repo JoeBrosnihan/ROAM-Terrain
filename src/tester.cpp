@@ -40,10 +40,25 @@ int main(int argc, char *argv[]) {
 	roam.single_split(roam.active_triangles[0]);
 	print_active_lpts(roam);
 	printf("\n");
-	roam.single_split(roam.active_triangles[0]);
+	roam.single_split(roam.active_triangles[1]);
 	print_active_lpts(roam);
 	printf("\n");
-	roam.single_split(roam.active_triangles[0]);
+	roam.single_split(roam.active_triangles[3]);
 	print_active_lpts(roam);
+	printf("\n");
+
+	printf("Target simplex to get neighbor:\n");
+	struct lptcode target = roam.active_triangles[3];
+	print_lpt(target);
+
+	printf("Neighbor 0 simplex:\n");
+	struct lptcode nbor0;
+	neighbor(&nbor0, target, 0);
+	print_lpt(nbor0);
+
+	printf("Neighbor 1 simplex:\n");
+	struct lptcode nbor1;
+	neighbor(&nbor1, target, 1);
+	print_lpt(nbor1);
 }
 
