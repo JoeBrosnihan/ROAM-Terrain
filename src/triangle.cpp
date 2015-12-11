@@ -1,6 +1,7 @@
 #include "triangle.hpp"
 
 #include <utility>
+#include <cstdlib>
 
 
 void compute_orthant(int *result, int *permutation) {
@@ -15,42 +16,123 @@ void compute_orthant(int *result, int *permutation) {
 		result[1] = -1;
 }
 
-struct lptcode neighbor(const struct lptcode &lpt, int neighbor) {
-	struct lptcode result; //Perhaps storing in a result ptr is better than returning.
+//returns true if neighbor exists within bounds, false otherwise
+//If neighbor exists, neighbor lpt code is stored in *result.
+bool neighbor(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
+	result->len_p = lpt.len_p;
+	result->l = lpt.l;
 
 	int lminus = (lpt.l - 1) % 2;
 	int lstar = lminus + 1;
+	int n_orthants = lpt.len_p / 2;
 
-	//if lpt is a 0-child
+	int childtype = 1;
+	int pi_lstar = lpt.permutation[lstar - 1];
+	int pi_lstar_sign = 1;
+	if (pi_lstar < 0)
+		pi_lstar_sign = -1;
+
+	int last_orth[2];
+	if (n_orthants > 0) {
+		last_orth[0] = lpt.orthant_list[(n_orthants - 1) * 2];
+		last_orth[1] = lpt.orthant_list[(n_orthants - 1) * 2 + 1];
+	} else {
+		last_orth[0] = 1;
+		last_orth[1] = 1;
+	}
+
+	//lpt is a 0 child iff sign(pi[l*]) = sign(o[|pi[l*]|]) Sect 5.1 Lemma 4
+	if (pi_lstar_sign == last_orth[pi_lstar * pi_lstar_sign])
+		childtype = 0;
+
+	//Compute neighbor permutation
+	if (childtype == 0) {
 		if (neighbor == 0) {
-			result.permutation[0] = -lpt.permutation[0];
-			result.permutation[1] = lpt.permutation[1];
+			//NEG1
+			result->permutation[0] = -lpt.permutation[0];
+			result->permutation[1] = lpt.permutation[1];
 		} else if (neighbor == 1) {
-			result.permutation[0] = lpt.permutation[1];
-			result.permutation[1] = lpt.permutation[0];
+			//SWPi
+			result->permutation[0] = lpt.permutation[1];
+			result->permutation[1] = lpt.permutation[0];
 		} else if (neighbor == 2) {
 			//not used
 		}
-	//else if lpt is a 1-child
+	} else if (childtype == 1) {
 		if (neighbor == 0) {
-			result.permutation[0] = -lpt.permutation[0];
-			result.permutation[1] = lpt.permutation[1];
-		} else if (neighbor == 2) {
-
-		} else if (neighbor == 2) {
+			//NEG1
+			result->permutation[0] = -lpt.permutation[0];
+			result->permutation[1] = lpt.permutation[1];
+		} else if (neighbor == lstar) {
+			//cyclically shift the last d - lminus elements and
+			//negate the wrap around (LFT l-)
+			if (lminus == 0) {
+				result->permutation[0] = lpt.permutation[1];
+				result->permutation[1] = -lpt.permutation[0];
+			} else {//lminus == 1
+				result->permutation[0] = lpt.permutation[0];
+				result->permutation[1] = -lpt.permutation[1];
+			}
+		} else if (neighbor == 1) { // and neighbor != l*
+			//SWPi
+			result->permutation[0] = lpt.permutation[1];
+			result->permutation[1] = lpt.permutation[0];
+		} else if (neighbor == 2) { // and neighbor != l*
 			//not used
-		}
-
-	if (neighbor == 0) {
-		
-	} else if (lpt.l == 1) {
-		if (neighbor == 1) {
-			//same orth list
-		} else if (neighbor == 2) {
-			//same orth list up to last orth
 		}
 	}
 
-	return result;
+	//Compute neighbor orthant list
+	if (neighbor == 0) {
+		//arbitrarily different orthant list
+		int direction_axis = abs(lpt.permutation[0]);//x axis = 1, y axis = 2
+		int direction_sign = 1;
+		if (lpt.permutation[0] < 0)
+			direction_sign = -1;
+
+		int ancestor = n_orthants - 1;
+		//back out of orthant list until you find a common ancestor
+		while (ancestor >= 0) {
+			//flip the orthant along the direction_axis
+			result->orthant_list[2 * ancestor + direction_axis - 1]
+					= -lpt.orthant_list[2 * ancestor + direction_axis - 1];
+			result->orthant_list[2 * ancestor + direction_axis % 2]
+					= lpt.orthant_list[2 * ancestor + direction_axis % 2];
+
+			//check if this was the last differing orthant
+			if (lpt.orthant_list[2 * ancestor + direction_axis - 1] == -direction_sign)
+				break;
+
+			ancestor--;
+		}
+		if (ancestor == -1) {
+			//error, neighbor is outside bounds of base simplex
+			return false;
+		} else {
+			//copy the rest of the orthants unchanged.
+			for (ancestor = ancestor - 1; ancestor >= 0; ancestor--) {
+				result->orthant_list[ancestor * 2] = lpt.orthant_list[ancestor * 2];
+				result->orthant_list[ancestor * 2 + 1] = lpt.orthant_list[ancestor * 2 + 1];
+			}
+		}
+	} else if (lpt.l == 1 || neighbor == 1) {
+		//same orthant list
+		for (int i = 0; i < n_orthants; i++) {
+			result->orthant_list[2 * i] = lpt.orthant_list[2 * i];
+			result->orthant_list[2 * i + 1] = lpt.orthant_list[2 * i + 1];
+		}
+	} else { //neighbor == 2 && l == 0
+		//differ only by last orth
+		if (n_orthants > 0) {
+			compute_orthant(&result->orthant_list[2 * (n_orthants - 1)],
+					result->permutation);
+			for (int i = 0; i < n_orthants - 1; i++) {
+				result->orthant_list[2 * i] = lpt.orthant_list[2 * i];
+				result->orthant_list[2 * i + 1] = lpt.orthant_list[2 * i + 1];
+			}
+		}
+	}
+
+	return true;
 }
 
