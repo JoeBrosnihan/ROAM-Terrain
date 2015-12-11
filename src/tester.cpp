@@ -42,5 +42,8 @@ int main(int argc, char *argv[]) {
 	printf("\n");
 	roam.single_split(roam.active_triangles[0]);
 	print_active_lpts(roam);
+	printf("\n");
+	roam.single_split(roam.active_triangles[0]);
+	print_active_lpts(roam);
 }
 

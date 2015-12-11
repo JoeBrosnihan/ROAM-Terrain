@@ -71,4 +71,7 @@ struct LPTHasher {
 //result must have space for 2 integers.
 void compute_orthant(int *result, int *permutation);
 
+//Computes the neighbor N(neighbor)(lpt)
+struct lptcode neighbor(const struct lptcode &lpt, int neighbor);
+
 #endif
