@@ -16,6 +16,26 @@ void compute_orthant(int *result, int *permutation) {
 		result[1] = -1;
 }
 
+//Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
+//lpt must not be a root simplex.
+static int childtype_lpt(const struct lptcode &lpt) {
+	int lminus = (lpt.l - 1) % 2;
+	int lstar = lminus + 1;
+
+	int pi_lstar = lpt.permutation[lstar - 1];
+	int pi_lstar_sign = -1;
+	if (pi_lstar < 0)
+		pi_lstar_sign = -1;
+	
+	int n_orthants = lpt.len_p / 2;
+	int last_orth_index = (n_orthants - 1) * 2;
+	//lpt is a 0 child iff sign(pi[l*]) = sign(o[|pi[l*]|]) Sect 5.1 Lemma 4
+	if (pi_lstar_sign == lpt.orthant_list[last_orth_index + pi_lstar * pi_lstar_sign])
+		return 0;
+	else
+		return 1;
+}
+
 //returns true if neighbor exists within bounds, false otherwise
 //If neighbor exists, neighbor lpt code is stored in *result.
 bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
@@ -26,25 +46,15 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 	int lstar = lminus + 1;
 	int n_orthants = lpt.len_p / 2;
 
-	int childtype = 1;
-	int pi_lstar = lpt.permutation[lstar - 1];
-	int pi_lstar_sign = 1;
-	if (pi_lstar < 0)
-		pi_lstar_sign = -1;
-
-	int last_orth[2];
-	if (n_orthants > 0) {
-		last_orth[0] = lpt.orthant_list[(n_orthants - 1) * 2];
-		last_orth[1] = lpt.orthant_list[(n_orthants - 1) * 2 + 1];
-	} else {
-		last_orth[0] = 1;
-		last_orth[1] = 1;
-	}
-
-	//lpt is a 0 child iff sign(pi[l*]) = sign(o[|pi[l*]|]) Sect 5.1 Lemma 4
-	if (pi_lstar_sign == last_orth[pi_lstar * pi_lstar_sign])
-		childtype = 0;
-
+	int childtype;
+	if (n_orthants > 0)
+		childtype = childtype_lpt(lpt);
+	else //Simplex Level is 0 or 1
+		//Consider root simplex a 0 child
+		//[1, 2] and [2, 1] are the only possible 0 children
+		//pi[0] is negative => lpt is a 1 child
+		childtype = lpt.permutation[0] < 0;
+	
 	//Compute neighbor permutation
 	if (childtype == 0) {
 		if (neighbor == 0) {
@@ -137,4 +147,9 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 
 	return true;
 }
+
+bool parent_lpt(struct lptcode *result, const struct lptcode &lpt) {
+	return false;	
+}
+
 

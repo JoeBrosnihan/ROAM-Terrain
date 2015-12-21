@@ -74,4 +74,7 @@ void compute_orthant(int *result, int *permutation);
 //Computes the neighbor N(neighbor)(lpt)
 bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor);
 
+//Computes the parent simplex
+bool parent_lpt(struct lptcode *result, const struct lptcode &lpt);
+
 #endif
