@@ -82,4 +82,8 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 //Returns false if lpt is a root simplex
 bool parent_lpt(struct lptcode *result, const struct lptcode &lpt);
 
+//Computes the vertices of the given simplex within the unit square
+//The vertices are stored in the float arrays, v0, v1, and v2 each of length 2.
+void get_vertices(float *v0, float *v1, float *v2, const struct lptcode &lpt);
+
 #endif

@@ -204,3 +204,60 @@ bool parent_lpt(struct lptcode *result, const struct lptcode &lpt) {
 	return true;	
 }
 
+//stores [row1 row2] in the result array whith length 4
+void get_perm_matrix(int *result, const struct lptcode &lpt) {
+	if (lpt.permutation[0] == 1 || lpt.permutation[0] == -1) {
+		//no flip about x = y
+		result[0] = lpt.permutation[0]; //1 or -1
+		result[1] = 0;
+		result[2] = 0;
+		result[3] = lpt.permutation[1] == 2 ? 1 : -1;
+	} else {
+		//yes flip about x = y
+		result[0] = 0;
+		result[1] = lpt.permutation[0] == 2 ? 1 : -1;
+		result[2] = lpt.permutation[1];
+		result[3] = 0;
+	}
+}
+
+//Multiplies 2x2 matrix by 2x1 vec
+//Stores result. result may equal vec.
+inline void multiply_2by2(float *result, int *matrix, float *vec) {
+	float temp = vec[0] * matrix[0] + vec[1] * matrix[1];
+	result[1] = vec[0] * matrix[2] + vec[1] * matrix[3];
+	result[0] = temp;
+}
+
+void get_vertices(float *v0, float *v1, float *v2, const struct lptcode &lpt) {
+	int n_orthants = lpt.len_p / 2;
+	float cx = 0, cy = 0;
+	float scale = 1.f;
+	for (int i = 0; i < n_orthants; i++) {
+		scale *= .5f;
+		cx += lpt.orthant_list[i * 2] * scale;
+		cy += lpt.orthant_list[i * 2 + 1] * scale;
+	}
+
+	int perm_matrix[4];
+	get_perm_matrix(perm_matrix, lpt);
+	if (lpt.l == 0) { //base simplex type 0
+		v0[0] = -scale;
+		v0[1] = -scale;
+	} else { //base simplex type 1
+		v0[0] = 0;
+		v0[1] = 0;
+	}
+	v1[0] = scale;
+	v1[1] = -scale;
+	v2[0] = scale;
+	v2[1] = scale;
+	multiply_2by2(v0, perm_matrix, v0);
+	multiply_2by2(v1, perm_matrix, v1);
+	multiply_2by2(v2, perm_matrix, v2);
+	v0[0] += cx;
+	v0[1] += cy;
+	v1[0] += cx;
+	v1[1] += cy;
+}
+
