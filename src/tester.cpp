@@ -47,11 +47,11 @@ int main(int argc, char *argv[]) {
 	print_active_lpts(roam);
 	printf("\n");
 
-	printf("Target simplex to get neighbor:\n");
+	printf("Target simplex:\n");
 	struct lptcode target = roam.active_triangles[3];
 	print_lpt(target);
 
-	printf("Neighbor 0 simplex:\n");
+	printf("\nNeighbor 0 simplex:\n");
 	struct lptcode nbor0;
 	neighbor_lpt(&nbor0, target, 0);
 	print_lpt(nbor0);
@@ -60,5 +60,10 @@ int main(int argc, char *argv[]) {
 	struct lptcode nbor1;
 	neighbor_lpt(&nbor1, target, 1);
 	print_lpt(nbor1);
+
+	printf("Parent simplex:\n");
+	struct lptcode parent;
+	parent_lpt(&parent, target);
+	print_lpt(parent);
 }
 

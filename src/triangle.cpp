@@ -178,9 +178,29 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 }
 
 bool parent_lpt(struct lptcode *result, const struct lptcode &lpt) {
+	if (lpt.len_p == 0)
+		return false;
+	result->len_p = lpt.len_p - 1;
+	result->l = result->len_p % 2;
+	int n_orthants = result->len_p / 2;
+	memcpy(result->orthant_list, lpt.orthant_list,
+			sizeof(int) * n_orthants * 2);
+
 	int childtype = childtype_lpt(lpt);
 
-	return false;	
-}
+	if (childtype == 0) {
+		result->permutation[0] = lpt.permutation[0];
+		result->permutation[1] = lpt.permutation[1];
+	} else {
+		if (result->l == 0) {
+			result->permutation[0] = lpt.permutation[1];
+			result->permutation[1] = -lpt.permutation[0];
+		} else {
+			result->permutation[0] = lpt.permutation[0];
+			result->permutation[1] = -lpt.permutation[1];
+		}
+	}
 
+	return true;	
+}
 
