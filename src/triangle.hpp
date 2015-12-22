@@ -8,7 +8,7 @@
 
 #include "vec3.hpp"
 
-#define MAX_LOD 10
+#define MAX_ORTH_LIST_LEN 10
 
 struct tri {
 	//Vertices with counter-clockwise winding
@@ -38,7 +38,7 @@ struct lptcode {
 	int permutation[2];
 	//list of orthants (always +/-1, +/-1)
 	//n orthants = floor(|p| / 2)
-	int orthant_list[MAX_LOD * 2];
+	int orthant_list[MAX_ORTH_LIST_LEN * 2];
 
 	bool operator==(const struct lptcode &rhs) const {
 		bool equal = (len_p == rhs.len_p) && (permutation[0]
@@ -71,10 +71,15 @@ struct LPTHasher {
 //result must have space for 2 integers.
 void compute_orthant(int *result, int *permutation);
 
+//Computes the 0 or 1 child of the given lpt
+//Return true iff the child's orthant list does not exceed the max length
+bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child);
+
 //Computes the neighbor N(neighbor)(lpt)
 bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor);
 
 //Computes the parent simplex
+//Returns false if lpt is a root simplex
 bool parent_lpt(struct lptcode *result, const struct lptcode &lpt);
 
 #endif

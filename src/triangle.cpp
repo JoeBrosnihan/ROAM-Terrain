@@ -3,6 +3,7 @@
 #include <utility>
 #include <cstdlib>
 #include <cassert>
+#include <cstring>
 
 void compute_orthant(int *result, int *permutation) {
 	//Apply the permutation transformation matrix to the orthant (1, 1).
@@ -34,6 +35,34 @@ static int childtype_lpt(const struct lptcode &lpt) {
 		return 0;
 	else
 		return 1;
+}
+
+bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child) {
+	int new_len = lpt.len_p + 1;
+	if (new_len / 2 > MAX_ORTH_LIST_LEN)
+		return false;
+	int n_orthants = lpt.len_p / 2;
+
+	result->len_p = new_len;
+	result->l = new_len % 2;
+	if (child == 0) {
+		result->permutation[0] = lpt.permutation[0];
+		result->permutation[1] = lpt.permutation[1];
+	} else {
+		if (lpt.l == 0) {
+			result->permutation[0] = -lpt.permutation[1];
+			result->permutation[1] = lpt.permutation[0];
+		} else {
+			result->permutation[0] = lpt.permutation[0];
+			result->permutation[1] = -lpt.permutation[1];
+		}
+	}
+	memcpy(result->orthant_list, lpt.orthant_list,
+			sizeof(int) * n_orthants * 2);
+	if (result->l == 0)
+		compute_orthant(result->orthant_list + n_orthants * 2,
+				result->permutation);
+	return true;
 }
 
 //returns true if neighbor exists within bounds, false otherwise
@@ -149,6 +178,8 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 }
 
 bool parent_lpt(struct lptcode *result, const struct lptcode &lpt) {
+	int childtype = childtype_lpt(lpt);
+
 	return false;	
 }
 

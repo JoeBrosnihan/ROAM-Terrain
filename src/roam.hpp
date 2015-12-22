@@ -24,7 +24,9 @@ class ROAMImpl {
 		//Build a new split queue from the active triangles
 		void construct_split_queue();
 		//Split a single triangle
-		void single_split(const struct lptcode &lpt);
+		//Returns true if the triangles was split
+		//Returns false if the triangle is already maximally split
+		bool single_split(const struct lptcode &lpt);
 		//Recursively split a triangle
 		void force_split(const struct lptcode &lpt);
 };

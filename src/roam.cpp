@@ -49,45 +49,31 @@ void ROAMImpl::construct_split_queue() {
 	//TODO implement
 };
 
-void ROAMImpl::single_split(const struct lptcode &lpt) {
-	//TODO handle hitting max lod
-	int n_orthants = lpt.len_p / 2;
-	int new_len = lpt.len_p + 1;
-
+bool ROAMImpl::single_split(const struct lptcode &lpt) {
 	struct lptcode sub0;
-	sub0.len_p = new_len;
-	sub0.l = new_len % 2;
-	sub0.permutation[0] = lpt.permutation[0];
-	sub0.permutation[1] = lpt.permutation[1];
-	memcpy(sub0.orthant_list, lpt.orthant_list,
-			sizeof(int) * n_orthants * 2);
-	if (sub0.l == 0)
-		compute_orthant(sub0.orthant_list + n_orthants * 2,
-				sub0.permutation);
-
+	if (!child_lpt(&sub0, lpt, 0)) //Simplex is already split to maximum
+		return false;
 	struct lptcode sub1;
-	sub1.len_p = new_len;
-	sub1.l = new_len % 2;
-	if (lpt.l == 0) {
-		sub1.permutation[0] = -lpt.permutation[1];
-		sub1.permutation[1] = lpt.permutation[0];
-	} else {
-		sub1.permutation[0] = lpt.permutation[0];
-		sub1.permutation[1] = -lpt.permutation[1];
-	}
-	memcpy(sub1.orthant_list, lpt.orthant_list,
-			sizeof(int) * n_orthants * 2);
-	if (sub1.l == 0)
-		compute_orthant(sub1.orthant_list + n_orthants * 2,
-				sub1.permutation);
+	child_lpt(&sub1, lpt, 1);
 	
 	remove_active_lpt(lpt);
 	add_active_lpt(sub0);
 	add_active_lpt(sub1);
+	
+	return true;
 };
 
 void ROAMImpl::force_split(const struct lptcode &lpt) {
-	remove_active_lpt(lpt);
-	//TODO implement
+	struct lptcode nbor; //the nbor accross 
+	bool nbor_in_bounds;
+	if (lpt.l == 0) {
+		nbor_in_bounds = neighbor_lpt(&nbor, lpt, 1);
+	} else {
+		nbor_in_bounds = neighbor_lpt(&nbor, lpt, 0);
+	}
+	if (nbor_in_bounds) {
+		//check if nbor is active
+		
+	}
 };
 
