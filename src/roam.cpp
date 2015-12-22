@@ -71,9 +71,21 @@ void ROAMImpl::force_split(const struct lptcode &lpt) {
 	} else {
 		nbor_in_bounds = neighbor_lpt(&nbor, lpt, 0);
 	}
-	if (nbor_in_bounds) {
-		//check if nbor is active
-		
+	single_split(lpt);
+
+	if (!nbor_in_bounds) //check if nbor is active
+		return;
+	//else check if we need a recursive split	
+	if (active_lpts.count(nbor) != 0)
+		single_split(nbor);
+	//else check nbor parent
+	struct lptcode nbor_parent;
+	parent_lpt(&nbor_parent, nbor);
+	if (active_lpts.count(nbor_parent) != 0) {
+		//need to recursively split
+		force_split(nbor_parent);
+		single_split(nbor);
 	}
+	//else splitting has already been done
 };
 
