@@ -1,6 +1,7 @@
 
 #include "triangle.hpp"
 #include "roam.hpp"
+#include "plot.hpp"
 
 void print_lpt(struct lptcode &lpt) {
 	printf("(len_p=%i,l=%i, perm={%i, %i}, orth={", lpt.len_p, lpt.l,
@@ -65,5 +66,9 @@ int main(int argc, char *argv[]) {
 	struct lptcode parent;
 	parent_lpt(&parent, target);
 	print_lpt(parent);
+
+	Plot plot("plot.html");
+	plot.draw_triangle(target);
+	plot.finish();
 }
 
