@@ -13,7 +13,13 @@ void print_lpt(struct lptcode &lpt) {
 	}
 	if (n_orthants != 0)
 		printf("\n");
-	printf("})\n");
+	printf("}\nvertices=[\n");
+	float v0[2];
+	float v1[2];
+	float v2[2];
+	get_vertices(v0, v1, v2, lpt);
+	printf("%g %g\n%g %g\n%g %g\n", v0[0], v0[1], v1[0], v1[1], v2[0], v2[1]);
+	printf("])\n");
 }
 
 void print_active_lpts(ROAMImpl &roam) {
@@ -23,8 +29,15 @@ void print_active_lpts(ROAMImpl &roam) {
 	}
 }
 
+void draw_active_lpts(ROAMImpl &roam, Plot &plot) {
+	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
+		plot.draw_triangle(roam.active_triangles[i]);
+	}
+}
+
 int main(int argc, char *argv[]) {
 	ROAMImpl roam;
+	Plot plot("plot.html");
 
 	struct lptcode base_simplex;
 	base_simplex.len_p = 0;
@@ -67,8 +80,10 @@ int main(int argc, char *argv[]) {
 	parent_lpt(&parent, target);
 	print_lpt(parent);
 
-	Plot plot("plot.html");
-	plot.draw_triangle(target);
+	draw_active_lpts(roam, plot);
+	//plot.draw_triangle(target);
+	//plot.draw_triangle(nbor0);
+	//plot.draw_triangle(nbor1);
 	plot.finish();
 }
 

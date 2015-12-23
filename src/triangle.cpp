@@ -215,8 +215,8 @@ void get_perm_matrix(int *result, const struct lptcode &lpt) {
 	} else {
 		//yes flip about x = y
 		result[0] = 0;
-		result[1] = lpt.permutation[0] == 2 ? 1 : -1;
-		result[2] = lpt.permutation[1];
+		result[1] = lpt.permutation[1];
+		result[2] = lpt.permutation[0] == 2 ? 1 : -1;
 		result[3] = 0;
 	}
 }
@@ -259,5 +259,7 @@ void get_vertices(float *v0, float *v1, float *v2, const struct lptcode &lpt) {
 	v0[1] += cy;
 	v1[0] += cx;
 	v1[1] += cy;
+	v2[0] += cx;
+	v2[1] += cy;
 }
 
