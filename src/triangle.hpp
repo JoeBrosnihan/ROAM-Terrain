@@ -9,6 +9,8 @@
 #include "vec3.hpp"
 
 #define MAX_ORTH_LIST_LEN 10
+#define OFFSET_BASIS 2166136261
+#define FNV_PRIME 16777619
 
 struct tri {
 	//Vertices with counter-clockwise winding
@@ -61,8 +63,22 @@ struct lptcode {
 
 struct LPTHasher {
 	size_t operator()(const struct lptcode &lpt) const {
-		size_t hash = 0;
-		hash += std::hash<int>()(lpt.len_p);
+		size_t hash = OFFSET_BASIS;
+		hash ^= lpt.len_p;
+		hash *= FNV_PRIME;
+
+		hash ^= lpt.permutation[0];
+		hash *= FNV_PRIME;
+		hash ^= lpt.permutation[1];
+		hash *= FNV_PRIME;
+
+		int n_orthants = lpt.len_p / 2;
+		for (int i = 0; i < n_orthants; i++) {
+			hash ^= lpt.orthant_list[2 * i];
+			hash *= FNV_PRIME;
+			hash ^= lpt.orthant_list[2 * i + 1];
+			hash *= FNV_PRIME;
+		}
 		return hash;
 	}
 };
