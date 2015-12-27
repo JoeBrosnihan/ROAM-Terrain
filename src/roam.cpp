@@ -44,11 +44,6 @@ void ROAMImpl::remove_active_lpt(const struct lptcode &lpt) {
 	//TODO optimization http://stackoverflow.com/questions/39912/how-do-i-remove-an-item-from-a-stl-vector-with-a-certain-value
 };
 
-//Build a new split queue from the active triangles
-void ROAMImpl::construct_split_queue() {
-	//TODO implement
-};
-
 bool ROAMImpl::single_split(const struct lptcode &lpt) {
 	struct lptcode sub0;
 	if (!child_lpt(&sub0, lpt, 0)) //Simplex is already split to maximum

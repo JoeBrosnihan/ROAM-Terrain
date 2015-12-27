@@ -35,6 +35,8 @@ void draw_active_lpts(ROAMImpl &roam, Plot &plot) {
 	}
 }
 
+
+
 int main(int argc, char *argv[]) {
 	ROAMImpl roam;
 	Plot plot("plot.html");
@@ -48,37 +50,8 @@ int main(int argc, char *argv[]) {
 	roam.add_active_lpt(base_simplex);
 	print_active_lpts(roam);
 	printf("\n");
-	roam.single_split(base_simplex);
-	print_active_lpts(roam);
-	printf("\n");
-	roam.single_split(roam.active_triangles[0]);
-	print_active_lpts(roam);
-	printf("\n");
-	roam.single_split(roam.active_triangles[1]);
-	print_active_lpts(roam);
-	printf("\n");
-	roam.single_split(roam.active_triangles[3]);
-	print_active_lpts(roam);
-	printf("\n");
 
-	printf("Target simplex:\n");
-	struct lptcode target = roam.active_triangles[3];
-	print_lpt(target);
-
-	printf("\nNeighbor 0 simplex:\n");
-	struct lptcode nbor0;
-	neighbor_lpt(&nbor0, target, 0);
-	print_lpt(nbor0);
-
-	printf("Neighbor 1 simplex:\n");
-	struct lptcode nbor1;
-	neighbor_lpt(&nbor1, target, 1);
-	print_lpt(nbor1);
-
-	printf("Parent simplex:\n");
-	struct lptcode parent;
-	parent_lpt(&parent, target);
-	print_lpt(parent);
+	
 
 	draw_active_lpts(roam, plot);
 	//plot.draw_triangle(target);

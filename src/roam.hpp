@@ -15,14 +15,8 @@ class ROAMImpl {
 		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
 				active_lpts;
 
-		//Split lowest priority triangle in the split_queue
-		//Initialize queue with a comparator that compares triangle priority
-		//std::priority_queue<struct lptcode> split_queue; //TODO Make comparator
-		
-		void add_active_lpt(const struct lptcode &lpt);
+		virtual void add_active_lpt(const struct lptcode &lpt);
 		void remove_active_lpt(const struct lptcode &lpt);
-		//Build a new split queue from the active triangles
-		void construct_split_queue();
 		//Split a single triangle
 		//Returns true if the triangles was split
 		//Returns false if the triangle is already maximally split
