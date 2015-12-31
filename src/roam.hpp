@@ -15,12 +15,12 @@ class ROAMImpl {
 		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
 				active_lpts;
 
-		virtual void add_active_lpt(const struct lptcode &lpt);
+		void add_active_lpt(const struct lptcode &lpt);
 		void remove_active_lpt(const struct lptcode &lpt);
 		//Split a single triangle
 		//Returns true if the triangles was split
 		//Returns false if the triangle is already maximally split
-		bool single_split(const struct lptcode &lpt);
+		virtual bool single_split(const struct lptcode &lpt);
 		//Recursively split a triangle
 		void force_split(const struct lptcode &lpt);
 };
