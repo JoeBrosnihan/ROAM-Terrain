@@ -4,9 +4,12 @@ LDLIBS=
 
 all: tester
 
-tester: roam.o tester.o triangle.o plot.o
+tester: roam.o roam_controller.o tester.o triangle.o plot.o
 
 roam.o: roam.cpp roam.hpp triangle.hpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+roam_controller.o: roam_controller.cpp roam_controller.hpp triangle.hpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 tester.o: tester.cpp roam.hpp triangle.hpp
