@@ -15,6 +15,7 @@ class ROAMImpl {
 		std::unordered_map<struct lptcode, struct lptcode, LPTHasher>
 				active_lpts;
 
+		ROAMImpl();
 		void add_active_lpt(const struct lptcode &lpt);
 		void remove_active_lpt(const struct lptcode &lpt);
 		//Split a single triangle

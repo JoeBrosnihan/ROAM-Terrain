@@ -6,26 +6,22 @@
 
 #include "triangle.hpp"
 
-/*
-//child = 0 or 1
-struct lptcode get_subtriangle(const struct &lpt, int child) {
-	struct lptcode child_lpt;
-	child_lpt.len_p = lpt.len_p++;
-	child_lpt.l = (lpt.l + 1) % 2;
-	if (child == 0) {
-		//inherit permutation
-		child_lpt.permutation[0] = lpt.permutation[0];
-		child_lpt.permutation[1] = lpt.permutation[1];
-	} else { //child = 1
-		//TODO Need help with this
-		//What is Pi of Sigma l on p7
-	}
-	if (child_lpt.l == 0) {
-		//TODO add orth(permutation) to the orthant list
-	}
-	return child_lpt;
-};
-*/
+
+ROAMImpl::ROAMImpl() {
+	struct lptcode base0;
+        base0.len_p = 0;
+        base0.l = 0;
+        base0.permutation[0] = 1;
+        base0.permutation[1] = 2;
+	struct lptcode base1;
+        base1.len_p = 0;
+        base1.l = 0;
+        base1.permutation[0] = 2;
+        base1.permutation[1] = 1;
+
+        add_active_lpt(base0);
+        add_active_lpt(base1);
+}
 
 void ROAMImpl::add_active_lpt(const struct lptcode &lpt) {
 	active_triangles.push_back(lpt);
