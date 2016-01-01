@@ -22,6 +22,6 @@ plot.o: plot.cpp plot.hpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf *~ *.o tester 
+	rm -rf *~ *.o tester *.html
 
 .PHONY : clean all
