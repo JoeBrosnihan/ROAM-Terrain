@@ -1,36 +1,36 @@
 #include "roam_controller.hpp"
 
+#include <iostream>
 
-bool ROAMController::single_split(const struct lptcode &lpt) {
-	struct lptcode sub0;
-	if (!child_lpt(&sub0, lpt, 0)) //Simplex is already split to maximum
-		return false;
-	struct lptcode sub1;
-	child_lpt(&sub1, lpt, 1);
-	
-	remove_active_lpt(lpt);
-	add_active_lpt(sub0);
-	add_active_lpt(sub1);
 
-	if (needs_split(sub0))
-		force_split(sub0);
-	if (needs_split(sub1))
-		force_split(sub1);
-	
-	return true;
-};
+void ROAMController::add_active_lpt(const struct lptcode &lpt) {
+	std::cout << "adding lpt, needs_split = " << needs_split(lpt) << "\n";
+	if (needs_split(lpt))
+		needs_split_queue.push(lpt);
+	ROAMImpl::add_active_lpt(lpt);
+}
 
 bool ROAMController::needs_split(const struct lptcode &lpt) {
 	float v0[2];
 	float v1[2];
 	float v2[2];
 	get_vertices(v0, v1, v2, lpt);
-	float centroid_x = (v0[0] + v1[0] + v2[0]) / 3f;
-	float centroid_y = (v0[1] * v1[1] * v2[1]) / 3f;
+	float centroid_x = (v0[0] + v1[0] + v2[0]) / 3.f;
+	float centroid_y = (v0[1] + v1[1] + v2[1]) / 3.f;
 	return get_target_lod(centroid_x, centroid_y) > lpt.len_p;
 }
 
 int ROAMController::get_target_lod(float x, float y) {
-	return 0;
+	return 2;
+}
+
+void ROAMController::full_split() {
+	std::cout << "full_split()\n";
+	while (!needs_split_queue.empty()) {
+		std::cout << "pop queue\n";
+		if (active_lpts.count(needs_split_queue.front()) != 0)
+			force_split(needs_split_queue.front());
+		needs_split_queue.pop();
+	}
 }
 

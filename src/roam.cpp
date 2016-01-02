@@ -7,22 +7,6 @@
 #include "triangle.hpp"
 
 
-ROAMImpl::ROAMImpl() {
-	struct lptcode base0;
-        base0.len_p = 0;
-        base0.l = 0;
-        base0.permutation[0] = 1;
-        base0.permutation[1] = 2;
-	struct lptcode base1;
-        base1.len_p = 0;
-        base1.l = 0;
-        base1.permutation[0] = 2;
-        base1.permutation[1] = 1;
-
-        add_active_lpt(base0);
-        add_active_lpt(base1);
-}
-
 void ROAMImpl::add_active_lpt(const struct lptcode &lpt) {
 	active_triangles.push_back(lpt);
 	active_lpts[lpt] = lpt;
@@ -71,12 +55,28 @@ void ROAMImpl::force_split(const struct lptcode &lpt) {
 		single_split(nbor);
 	//else check nbor parent
 	struct lptcode nbor_parent;
-	parent_lpt(&nbor_parent, nbor);
-	if (active_lpts.count(nbor_parent) != 0) {
+	bool parent_is_valid = parent_lpt(&nbor_parent, nbor); //not valid means nbor is a root simplex
+	if (parent_is_valid && active_lpts.count(nbor_parent) != 0) {
 		//need to recursively split
 		force_split(nbor_parent);
 		single_split(nbor);
 	}
 	//else splitting has already been done
 };
+
+void ROAMImpl::add_base_square() {
+	struct lptcode base0;
+        base0.len_p = 0;
+        base0.l = 0;
+        base0.permutation[0] = 1;
+        base0.permutation[1] = 2;
+	struct lptcode base1;
+        base1.len_p = 0;
+        base1.l = 0;
+        base1.permutation[0] = 2;
+        base1.permutation[1] = 1;
+
+        add_active_lpt(base0);
+        add_active_lpt(base1);
+}
 

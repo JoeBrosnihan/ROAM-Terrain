@@ -1,6 +1,7 @@
 
 #include "triangle.hpp"
 #include "roam.hpp"
+#include "roam_controller.hpp"
 #include "plot.hpp"
 
 void print_lpt(struct lptcode &lpt) {
@@ -36,15 +37,23 @@ void draw_active_lpts(ROAMImpl &roam, Plot &plot) {
 }
 
 
+class Test1 : public ROAMController {
+	public:
+	private:
+		int get_target_lod(float x, float y) {
+			if (x > 0)
+				return 3;
+			else
+				return 0;
+		}
+};
 
 int main(int argc, char *argv[]) {
-	ROAMImpl roam;
+	Test1 roam;
 	Plot plot("plot.html");
 
-	print_active_lpts(roam);
-	printf("\n");
-
-	
+	roam.add_base_square();
+	roam.full_split();
 
 	draw_active_lpts(roam, plot);
 	//plot.draw_triangle(target);
