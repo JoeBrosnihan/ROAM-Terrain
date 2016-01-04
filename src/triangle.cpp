@@ -24,7 +24,7 @@ int childtype_lpt(const struct lptcode &lpt) {
 	int lstar = lminus + 1;
 
 	int pi_lstar = lpt.permutation[lstar - 1];
-	int pi_lstar_sign = -1;
+	int pi_lstar_sign = 1;
 	if (pi_lstar < 0)
 		pi_lstar_sign = -1;
 	
