@@ -19,7 +19,7 @@ void compute_orthant(int *result, int *permutation) {
 
 //Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
 //lpt must not be a root simplex.
-static int childtype_lpt(const struct lptcode &lpt) {
+int childtype_lpt(const struct lptcode &lpt) {
 	int lminus = (lpt.l - 1) % 2;
 	int lstar = lminus + 1;
 

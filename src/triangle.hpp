@@ -102,4 +102,8 @@ bool parent_lpt(struct lptcode *result, const struct lptcode &lpt);
 //The vertices are stored in the float arrays, v0, v1, and v2 each of length 2.
 void get_vertices(float *v0, float *v1, float *v2, const struct lptcode &lpt);
 
+//Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
+//lpt must not be a root simplex.
+int childtype_lpt(const struct lptcode &lpt);
+
 #endif
