@@ -42,6 +42,12 @@ void Plot::draw_triangle(const struct lptcode &lpt) {
 	}
 }
 
+void Plot::draw_active_lpts(ROAMImpl &roam) {
+	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
+		draw_triangle(roam.active_triangles[i]);
+	}
+}
+
 void Plot::setColor(std::string color) {
 	plotfile << "\n\
 		ctx.strokeStyle = '" << color << "';\n\

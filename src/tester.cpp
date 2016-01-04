@@ -30,19 +30,13 @@ void print_active_lpts(ROAMImpl &roam) {
 	}
 }
 
-void draw_active_lpts(ROAMImpl &roam, Plot &plot) {
-	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
-		plot.draw_triangle(roam.active_triangles[i]);
-	}
-}
-
 
 class Test1 : public ROAMController {
 	public:
 	private:
 		int get_target_lod(float x, float y) {
-			if (x > 0)
-				return 3;
+			if (x > 0 && y > -.4f)
+				return 4;
 			else
 				return 0;
 		}
@@ -50,15 +44,33 @@ class Test1 : public ROAMController {
 
 int main(int argc, char *argv[]) {
 	Test1 roam;
-	Plot plot("plot.html");
+	Plot plot("output_plot.html");
 
 	roam.add_base_square();
 	roam.full_split();
 
-	draw_active_lpts(roam, plot);
-	//plot.draw_triangle(target);
-	//plot.draw_triangle(nbor0);
-	//plot.draw_triangle(nbor1);
+	plot.draw_active_lpts(roam);
+	
+	struct lptcode lpt;
+	lpt.len_p = 3;
+	lpt.l = 1;
+	lpt.permutation[0] = -1;
+	lpt.permutation[1] = 2;
+	lpt.orthant_list[0] = 1;
+	lpt.orthant_list[1] = 1;
+	plot.setColor("#ff0000");
+	plot.draw_triangle(lpt);
+	
+	struct lptcode nbor;
+	neighbor_lpt(&nbor, lpt, 0);
+	plot.setColor("#00ff00");
+	plot.draw_triangle(nbor);
+
+	struct lptcode parent;
+	parent_lpt(&parent, nbor);
+	plot.setColor("#0000ff");
+	plot.draw_triangle(parent);
+
 	plot.finish();
 }
 
