@@ -6,6 +6,8 @@
 
 #include "triangle.hpp"
 
+#define SHOW_PERMUTATIONS true
+
 Plot::Plot(string filename) {
 	plotfile.open(filename, ios::out | ios::trunc);
 	plotfile << "\
@@ -32,6 +34,11 @@ void Plot::draw_triangle(const struct lptcode &lpt) {
 		ctx.closePath();\
 		ctx.stroke();\
 	";
+	if (SHOW_PERMUTATIONS) {
+		float cx = (v0[0] + v1[0] + v2[0]) / 3.f;
+		float cy = (v0[1] + v1[1] + v2[1]) / 3.f;
+		plotfile << "ctx.fillText(\"[" << lpt.permutation[0] << ", " << lpt.permutation[1] << "]\", " << (cx * .5f + .5f) * width << ", " << (.5f - cy * .5f) * height << ");";
+	}
 }
 
 void Plot::finish() {
