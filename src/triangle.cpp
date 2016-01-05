@@ -29,10 +29,19 @@ int childtype_lpt(const struct lptcode &lpt) {
 	if (pi_lstar < 0)
 		pi_lstar_sign = -1;
 	
-	int n_orthants = lpt.len_p / 2;
-	int last_orth_index = (n_orthants - 1) * 2;
+	int o;
+	if (lpt.len_p == 0) {
+		return 0;
+	} else if (lpt.len_p <= 2) {
+		o = 1;
+	} else {
+		int n_orthants = lpt.len_p / 2;
+		int last_orth_index = (n_orthants - 1) * 2;
+		o = lpt.orthant_list[last_orth_index + pi_lstar * pi_lstar_sign - 1];
+	}
+
 	//lpt is a 0 child iff sign(pi[l*]) = sign(o[|pi[l*]|]) Sect 5.1 Lemma 4
-	if (pi_lstar_sign == lpt.orthant_list[last_orth_index + pi_lstar * pi_lstar_sign - 1])
+	if (pi_lstar_sign == o)
 		return 0;
 	else
 		return 1;
