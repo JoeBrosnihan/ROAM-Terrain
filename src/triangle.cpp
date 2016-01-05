@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstring>
 
+
 void compute_orthant(int *result, int *permutation) {
 	//Apply the permutation transformation matrix to the orthant (1, 1).
 	if (permutation[0] == 1 || permutation[1] == 1)
@@ -20,7 +21,7 @@ void compute_orthant(int *result, int *permutation) {
 //Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
 //lpt must not be a root simplex.
 int childtype_lpt(const struct lptcode &lpt) {
-	int lminus = (lpt.l - 1) % 2;
+	int lminus = (lpt.l + 1) % 2;
 	int lstar = lminus + 1;
 
 	int pi_lstar = lpt.permutation[lstar - 1];
@@ -71,7 +72,7 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 	result->len_p = lpt.len_p;
 	result->l = lpt.l;
 
-	int lminus = (lpt.l - 1) % 2;
+	int lminus = (lpt.l + 1) % 2;
 	int lstar = lminus + 1;
 	int n_orthants = lpt.len_p / 2;
 
