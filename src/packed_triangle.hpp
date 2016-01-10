@@ -55,9 +55,10 @@ struct LPTHasher {
 	}
 };
 
-//Computes the orthant of a given permutation and stores it in the result array
-//result must have space for 2 integers.
-void compute_orthant(int *result, int *permutation);
+//Computes the orthant of a given permutation
+//uses 3 bits stored in permutation
+//the lowest two bits of the return value hold the orthant.
+uint8_t compute_orthant(uint8_t permutation);
 
 //Computes the 0 or 1 child of the given lpt
 //Return true iff the child's orthant list does not exceed the max length

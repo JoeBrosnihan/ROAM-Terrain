@@ -9,16 +9,22 @@
 namespace packedlpt {
 
 //Gets the bit of data at index
-//returns -1 if bit is 0, 1 if bit is 1.
-inline int bit_to_sign(uint8_t data, int index) {
-	uint8_t bit = (data & (1 << index)) >> index;
-	return bit * 2 - 1;
+//returns 0 or 1
+inline uint8_t get_bit(uint8_t data, int index) {
+	return (data & (1 << index)) >> index;
 }
 
-void compute_orthant(int *result, int *permutation) {
-	//TODO implement
-	result[0] = 1;
-	result[1] = 1;
+//Gets sign represented by the bit of data at index
+//returns -1 if bit is 0, 1 if bit is 1.
+inline int bit_to_sign(uint8_t data, int index) {
+	return 1 - get_bit(data, index) * 2;
+}
+
+uint8_t compute_orthant(uint8_t permutation) {
+	if (permutation & 1)
+		return get_bit(permutation, 2) | get_bit(permutation, 1) << 1;
+	else
+		return get_bit(permutation, 1) | get_bit(permutation, 2) << 1;
 }
 
 //Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
@@ -29,10 +35,33 @@ int childtype_lpt(const struct lptcode &lpt) {
 }
 
 bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child) {
-	//TODO implement
-	result->len_p = 0;
+	uint8_t new_len = lpt.len_p + 1;
+	if (new_len / 2 > MAX_ORTH_LIST_LEN)
+		return false;
+	int n_orthants = lpt.len_p / 2;
+
+	result->len_p = new_len;
 	for (int i = 0; i < DATA_LEN; i++) {
-		result->data[i] = 0;
+		result->data[i] = lpt.data[i];
+	}
+	
+	if (child == 0) {
+		result->data[0] = lpt.data[0];
+	} else {
+		if (lpt.len_p % 2 == 0) {
+			result->data[0] = get_bit(~lpt.data[0], 0)
+				| get_bit(~lpt.data[0], 2) << 1
+				| get_bit(lpt.data[0], 1) << 2;
+		} else {
+			result->data[0] = get_bit(lpt.data[0], 0)
+				| get_bit(lpt.data[0], 1) << 1
+				| get_bit(~lpt.data[0], 2) << 2;
+		}
+	}
+	
+	if (new_len % 2 == 0) {
+		int bit_index = 4 + n_orthants * 2;
+		result->data[bit_index / 8] |= compute_orthant(result->data[0]) << bit_index % 8;
 	}
 	return true;
 }
