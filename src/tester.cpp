@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 	print_active_lpts(roam);
 	std::cout << "=====================\n";
 	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
-		if (roam.active_triangles[i].len_p < 2)
+		if (roam.active_triangles[i].len_p < 3)
 			roam.single_split(roam.active_triangles[i--]);
 	}
 //	roam.single_split(roam.active_triangles[0]);
@@ -55,6 +55,17 @@ int main(int argc, char *argv[]) {
 
 	plot.draw_active_lpts(roam);
 	
+	struct lptcode lpt = roam.active_triangles[3];
+	plot.setColor("#ff0000");
+	plot.draw_triangle(lpt);
+	struct lptcode nbor;
+	neighbor_lpt(&nbor, lpt, 0);
+	plot.setColor("#00ff00");
+	plot.draw_triangle(nbor);
+	neighbor_lpt(&nbor, lpt, 1);
+	plot.setColor("#0000ff");
+	plot.draw_triangle(nbor);
+
 	plot.finish();
 }
 

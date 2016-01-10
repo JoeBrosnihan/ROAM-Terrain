@@ -69,12 +69,14 @@ bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child) {
 	if (child == 0) {
 		result->data[0] = lpt.data[0];
 	} else {
+		uint8_t mask = ~7;
+		result->data[0] &= mask; //clear previous perm data
 		if (lpt.len_p % 2 == 0) {
-			result->data[0] = get_bit(~lpt.data[0], 0)
+			result->data[0] |= get_bit(~lpt.data[0], 0)
 				| get_bit(~lpt.data[0], 2) << 1
 				| get_bit(lpt.data[0], 1) << 2;
 		} else {
-			result->data[0] = get_bit(lpt.data[0], 0)
+			result->data[0] |= get_bit(lpt.data[0], 0)
 				| get_bit(lpt.data[0], 1) << 1
 				| get_bit(~lpt.data[0], 2) << 2;
 		}
@@ -90,11 +92,131 @@ bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child) {
 //returns true if neighbor exists within bounds, false otherwise
 //If neighbor exists, neighbor lpt code is stored in *result.
 bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbor) {
-	//TODO implement
-	result->len_p = 0;
-	for (int i = 0; i < DATA_LEN; i++) {
+	result->len_p = lpt.len_p;
+
+        int lminus = (lpt.len_p + 1) % 2;
+        int lstar = lminus + 1;
+        int n_orthants = lpt.len_p / 2;
+
+        int childtype;
+        if (n_orthants > 0)
+                childtype = childtype_lpt(lpt);
+        else //Simplex Level is 0 or 1
+                //Consider root simplex a 0 child
+                //[1, 2] and [2, 1] are the only possible 0 children
+                //pi[0] is negative => lpt is a 1 child
+		childtype = get_bit(lpt.data[0], 1);
+
+        //Compute neighbor permutation
+        if (childtype == 0) {
+                if (neighbor == 0) {
+                        //NEG1
+			result->data[0] = get_bit(lpt.data[0], 0)
+				| get_bit(~lpt.data[0], 1) << 1
+				| get_bit(lpt.data[0], 2) << 2;
+                } else if (neighbor == 1) {
+                        //SWPi
+			result->data[0] = get_bit(~lpt.data[0], 0)
+				| get_bit(lpt.data[0], 2) << 1
+				| get_bit(lpt.data[0], 1) << 2;
+                } else if (neighbor == 2) {
+                        //not used
+                        assert(false);
+                }
+        } else if (childtype == 1) {
+                if (neighbor == 0) {
+                        //NEG1
+			result->data[0] = get_bit(lpt.data[0], 0)
+				| get_bit(~lpt.data[0], 1) << 1
+				| get_bit(lpt.data[0], 2) << 2;
+                } else if (neighbor == lstar) {
+                        //cyclically shift the last d - lminus elements and
+                        //negate the wrap around (LFT l-)
+                        if (lminus == 0) {
+				result->data[0] = get_bit(~lpt.data[0], 0)
+					| get_bit(lpt.data[0], 2) << 1
+					| get_bit(~lpt.data[0], 1) << 2;
+                        } else {//lminus == 1
+				result->data[0] = get_bit(lpt.data[0], 0)
+					| get_bit(lpt.data[0], 1) << 1
+					| get_bit(~lpt.data[0], 2) << 2;
+                        }
+                } else if (neighbor == 1) { // and neighbor != l*
+                        //SWPi
+			result->data[0] = get_bit(~lpt.data[0], 0)
+				| get_bit(lpt.data[0], 2) << 1
+				| get_bit(lpt.data[0], 1) << 2;
+                } else if (neighbor == 2) { // and neighbor != l*
+                        //not used
+                        assert(false);
+                }
+        }
+
+	//zero the orthant list
+	for (int i = 1; i < DATA_LEN; i++) {
 		result->data[i] = 0;
 	}
+	
+	if (neighbor == 0) {
+                //arbitrarily different orthant list
+                uint8_t direction_axis = get_bit(lpt.data[0], 0); //x axis = 0, y axis = 1
+                uint8_t direction_sign = get_bit(lpt.data[0], 1);
+
+                int ancestor = n_orthants - 1;
+                //back out of orthant list until you find a common ancestor
+                while (ancestor >= 0) {
+                        //flip the orthant along the direction_axis
+			int orth_bit_index = 4 + 2 * ancestor;
+			result->data[orth_bit_index / 8] |= ((~lpt.data[orth_bit_index / 8])
+					& (1 << (orth_bit_index % 8 + direction_axis)))
+					| (lpt.data[orth_bit_index / 8]
+					& (1 << (orth_bit_index % 8 + !direction_axis)));
+
+                        //check if this was the last differing orthant
+			if (get_bit(lpt.data[orth_bit_index / 8], (orth_bit_index % 8) + direction_axis)
+					!= direction_sign)
+				break;
+
+                        ancestor--;
+                }
+                if (ancestor == -1) {
+                        //error, neighbor is outside bounds of base simplex
+                        return false;
+                } else {
+                        //copy the rest of the orthants unchanged.
+                        for (ancestor = ancestor - 1; ancestor >= 0; ancestor--) {
+				int orth_bit_index = 4 + 2 * ancestor;
+				result->data[orth_bit_index / 8] |= (lpt.data[orth_bit_index / 8]
+						& (1 << (orth_bit_index % 8)))
+						| (lpt.data[orth_bit_index / 8]
+						& (1 << (orth_bit_index % 8 + 1)));
+                        }
+                }
+        } else if (lpt.len_p % 2 == 1 || neighbor == 1) {
+                //same orthant list
+                for (int i = 0; i < n_orthants; i++) {
+			int orth_bit_index = 4 + 2 * i;
+			result->data[orth_bit_index / 8] |= (lpt.data[orth_bit_index / 8]
+					& (1 << (orth_bit_index % 8)))
+					| (lpt.data[orth_bit_index / 8]
+					& (1 << (orth_bit_index % 8 + 1)));
+                }
+        } else { //neighbor == 2 && l == 0
+                //differ only by last orth
+                if (n_orthants > 0) {
+			int orth_bit_index = 4 + 2 * (n_orthants - 1);
+                        result->data[orth_bit_index / 8] |= compute_orthant(lpt.data[0]) << orth_bit_index % 8;
+                        
+			for (int i = 0; i < n_orthants - 1; i++) {
+				int orth_bit_index = 4 + 2 * i;
+				result->data[orth_bit_index / 8] |= (lpt.data[orth_bit_index / 8]
+						& (1 << (orth_bit_index % 8)))
+						| (lpt.data[orth_bit_index / 8]
+						& (1 << (orth_bit_index % 8 + 1)));
+	                }
+                }
+        }
+
 	return true;
 }
 
