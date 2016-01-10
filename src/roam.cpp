@@ -4,8 +4,10 @@
 #include <cstring>
 #include <cassert>
 
-#include "triangle.hpp"
+#include "packed_triangle.hpp"
 
+
+using namespace packedlpt;
 
 void ROAMImpl::add_active_lpt(const struct lptcode &lpt) {
 	active_triangles.push_back(lpt);
@@ -41,7 +43,7 @@ bool ROAMImpl::single_split(const struct lptcode &lpt) {
 void ROAMImpl::force_split(const struct lptcode &lpt) {
 	struct lptcode nbor; //the nbor accross 
 	bool nbor_in_bounds;
-	if (lpt.l == 0) {
+	if (lpt.len_p % 2 == 0) {
 		nbor_in_bounds = neighbor_lpt(&nbor, lpt, 1);
 	} else {
 		nbor_in_bounds = neighbor_lpt(&nbor, lpt, 0);
@@ -67,14 +69,16 @@ void ROAMImpl::force_split(const struct lptcode &lpt) {
 void ROAMImpl::add_base_square() {
 	struct lptcode base0;
         base0.len_p = 0;
-        base0.l = 0;
-        base0.permutation[0] = 1;
-        base0.permutation[1] = 2;
+	for (int i = 0; i < DATA_LEN; i++) {
+		base0.data[i] = 0;
+	}
+        
 	struct lptcode base1;
-        base1.len_p = 0;
-        base1.l = 0;
-        base1.permutation[0] = 2;
-        base1.permutation[1] = 1;
+	base1.len_p = 0;
+	for (int i = 0; i < DATA_LEN; i++) {
+		base1.data[i] = 0;
+	}
+	base1.data[0] = 1 << 7;
 
         add_active_lpt(base0);
         add_active_lpt(base1);

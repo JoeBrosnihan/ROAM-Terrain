@@ -4,7 +4,10 @@
 
 #include <queue>
 
-#include "triangle.hpp"
+#include "packed_triangle.hpp"
+
+
+using namespace packedlpt;
 
 class ROAMController : public ROAMImpl {
 	public:

@@ -4,10 +4,10 @@
 #include <queue>
 #include <unordered_map>
 
-#include "triangle.hpp"
+#include "packed_triangle.hpp"
 
 
-using namespace nonpackedlpt;
+using namespace packedlpt;
 
 class ROAMImpl {
 	public:

@@ -8,8 +8,8 @@
 
 #define SHOW_PERMUTATIONS true
 
-Plot::Plot(string filename) {
-	plotfile.open(filename, ios::out | ios::trunc);
+Plot::Plot(std::string filename) {
+	plotfile.open(filename, std::ios::out | std::ios::trunc);
 	plotfile << "\n\
 	<!DOCTYPE HTML>\n\
 	<html>\n\
@@ -34,12 +34,14 @@ void Plot::draw_triangle(const struct lptcode &lpt) {
 		ctx.closePath();\n\
 		ctx.stroke();\n\
 	";
+	/*
 	if (SHOW_PERMUTATIONS) {
 		float cx = (v0[0] + v1[0] + v2[0]) / 3.f;
 		float cy = (v0[1] + v1[1] + v2[1]) / 3.f;
 		plotfile << "\n\
 		ctx.fillText(\"" << childtype_lpt(lpt) << " [" << lpt.permutation[0] << ", " << lpt.permutation[1] << "]\", " << (cx * .5f + .5f) * width << ", " << (.5f - cy * .5f) * height << ");\n";
 	}
+	*/
 }
 
 void Plot::draw_active_lpts(ROAMImpl &roam) {
