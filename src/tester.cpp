@@ -8,7 +8,16 @@
 using namespace packedlpt;
 
 void print_lpt(struct lptcode &lpt) {
-
+	std::cout << (int) lpt.len_p << " " << (int) (lpt.data[0] << 4 >> 4) << " | " << (int) (lpt.data[0] >> 4) << "\n";
+	std::cout << "type: " << childtype_lpt(lpt) << "\n";
+	float v0[2];
+	float v1[2];
+	float v2[2];
+	get_vertices(v0, v1, v2, lpt);
+	std::cout << "(" << v0[0] << ", " << v0[1] << ")\n";
+	std::cout << "(" << v1[0] << ", " << v1[1] << ")\n";
+	std::cout << "(" << v2[0] << ", " << v2[1] << ")\n";
+	std::cout << "\n";
 }
 
 void print_active_lpts(ROAMImpl &roam) {
@@ -35,6 +44,14 @@ int main(int argc, char *argv[]) {
 	Plot plot("output_plot.html");
 
 	roam.add_base_square();
+	print_active_lpts(roam);
+	std::cout << "=====================\n";
+	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
+		if (roam.active_triangles[i].len_p < 2)
+			roam.single_split(roam.active_triangles[i--]);
+	}
+//	roam.single_split(roam.active_triangles[0]);
+	print_active_lpts(roam);
 
 	plot.draw_active_lpts(roam);
 	

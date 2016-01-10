@@ -30,8 +30,29 @@ uint8_t compute_orthant(uint8_t permutation) {
 //Returns 0 or 1 if lpt is a 0 or 1 child simplex respectively
 //lpt must not be a root simplex.
 int childtype_lpt(const struct lptcode &lpt) {
-	//TODO implement
-	return 0;
+	int lminus = (lpt.len_p + 1) % 2;
+        int lstar = lminus + 1;
+
+	int pi_index_of_1 = get_bit(lpt.data[0], 1);
+
+        int pi_lstar_sign = get_bit(lpt.data[0], lstar);
+
+	uint8_t last_orth_bit;
+	if (lpt.len_p == 0) {
+		return 0;
+	} else if (lpt.len_p <= 2) {
+		last_orth_bit = 0;
+	} else {
+        	int n_orthants = lpt.len_p / 2;
+        	int last_orth_bit_index = 4 + (n_orthants - 1) * 2 + 1 - (lminus == pi_index_of_1);
+		last_orth_bit = get_bit(lpt.data[last_orth_bit_index / 8], last_orth_bit_index % 8);
+	}
+
+        //lpt is a 0 child iff sign(pi[l*]) = sign(o[|pi[l*]|]) Sect 5.1 Lemma 4
+        if (pi_lstar_sign == last_orth_bit)
+                return 0;
+        else
+                return 1;
 }
 
 bool child_lpt(struct lptcode *result, const struct lptcode &lpt, int child) {
