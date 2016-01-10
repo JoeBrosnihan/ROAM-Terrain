@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
 	Plot plot("output_plot.html");
 
 	roam.add_base_square();
-	roam.full_split();
 
 	plot.draw_active_lpts(roam);
 	

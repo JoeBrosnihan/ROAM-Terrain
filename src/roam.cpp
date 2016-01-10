@@ -78,7 +78,7 @@ void ROAMImpl::add_base_square() {
 	for (int i = 0; i < DATA_LEN; i++) {
 		base1.data[i] = 0;
 	}
-	base1.data[0] = 1 << 7;
+	base1.data[0] = 1;
 
         add_active_lpt(base0);
         add_active_lpt(base1);
