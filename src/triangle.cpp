@@ -6,6 +6,8 @@
 #include <cstring>
 
 
+namespace nonpackedlpt {
+
 void compute_orthant(int *result, int *permutation) {
 	//Apply the permutation transformation matrix to the orthant (1, 1).
 	if (permutation[0] == 1 || permutation[1] == 1)
@@ -271,5 +273,7 @@ void get_vertices(float *v0, float *v1, float *v2, const struct lptcode &lpt) {
 	v1[1] += cy;
 	v2[0] += cx;
 	v2[1] += cy;
+}
+
 }
 

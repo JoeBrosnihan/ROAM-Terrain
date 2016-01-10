@@ -4,6 +4,9 @@
 #include "roam_controller.hpp"
 #include "plot.hpp"
 
+
+using namespace nonpackedlpt;
+
 void print_lpt(struct lptcode &lpt) {
 	printf("(len_p=%i,l=%i, perm={%i, %i}, orth={", lpt.len_p, lpt.l,
 			lpt.permutation[0], lpt.permutation[1]);

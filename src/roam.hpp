@@ -6,6 +6,9 @@
 
 #include "triangle.hpp"
 
+
+using namespace nonpackedlpt;
+
 class ROAMImpl {
 	public:
 		//Store only triangles currently rendered

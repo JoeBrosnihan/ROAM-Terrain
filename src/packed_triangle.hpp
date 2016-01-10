@@ -9,37 +9,32 @@
 #include "vec3.hpp"
 
 #define MAX_ORTH_LIST_LEN 10
+#define DATA_LEN ((4 + 2 * MAX_ORTH_LIST_LEN) + 7) / 8
 #define OFFSET_BASIS 2166136261
 #define FNV_PRIME 16777619
 
 
-namespace nonpackedlpt {
+namespace packedlpt {
 
 //A code that describes a triangle
 struct lptcode {
-	//The length of the simplex code	
-	int len_p;
-	//l = |p| mod d, the simplex's level
-	int l;
-	//TODO Permutation
-	int permutation[2];
-	//list of orthants (always +/-1, +/-1)
-	//n orthants = floor(|p| / 2)
-	int orthant_list[MAX_ORTH_LIST_LEN * 2];
+	//the length of the simplex code
+	uint8_t len_p;
+
+	//transform is 1,2 if bit0 is 0; 2,1 if bit0 is 1
+	//first entry of transform is positive iff bit1 is 0
+	//second entry ... bit2
+	//starting with bit4, every two bits store the sign of the orthant's
+		//x and y coordinates respectively. 0 means positive, 1 negative.
+
+	//The tail of data must be zeroed out.
+	uint8_t data[DATA_LEN];
 
 	bool operator==(const struct lptcode &rhs) const {
-		bool equal = (len_p == rhs.len_p) && (permutation[0]
-				== rhs.permutation[0]) && (permutation[1]
-				== rhs.permutation[1]);
-		if (!equal)
+		if (len_p != rhs.len_p)
 			return false;
-		int n_orthants = len_p / 2;
-		for (int i = 0; i < n_orthants; i++) {
-			equal = (orthant_list[2 * i] ==
-					rhs.orthant_list[2 * i]) &&
-					(orthant_list[2 * i + 1] ==
-					rhs.orthant_list[2 * i + 1]);
-			if (!equal)
+		for (int i = 0; i < DATA_LEN; i++) {
+			if (data[i] != rhs.data[i])
 				return false;
 		}
 		return true;
@@ -52,16 +47,8 @@ struct LPTHasher {
 		hash ^= lpt.len_p;
 		hash *= FNV_PRIME;
 
-		hash ^= lpt.permutation[0];
-		hash *= FNV_PRIME;
-		hash ^= lpt.permutation[1];
-		hash *= FNV_PRIME;
-
-		int n_orthants = lpt.len_p / 2;
-		for (int i = 0; i < n_orthants; i++) {
-			hash ^= lpt.orthant_list[2 * i];
-			hash *= FNV_PRIME;
-			hash ^= lpt.orthant_list[2 * i + 1];
+		for (int i = 0; i < DATA_LEN; i++) {
+			hash ^= lpt.data[i];
 			hash *= FNV_PRIME;
 		}
 		return hash;
