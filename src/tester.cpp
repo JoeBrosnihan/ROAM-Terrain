@@ -8,7 +8,7 @@
 using namespace packedlpt;
 
 void print_lpt(struct lptcode &lpt) {
-	std::cout << (int) lpt.len_p << " " << (int) (lpt.data[0] << 4 >> 4) << " | " << (int) (lpt.data[0] >> 4) << "\n";
+	std::cout << (int) lpt.len_p << " " << (int) (lpt.data[0] & 7) << " | " << (int) (lpt.data[0] >> 4) << "\n";
 	std::cout << "type: " << childtype_lpt(lpt) << "\n";
 	float v0[2];
 	float v1[2];
@@ -44,27 +44,39 @@ int main(int argc, char *argv[]) {
 	Plot plot("output_plot.html");
 
 	roam.add_base_square();
-	print_active_lpts(roam);
-	std::cout << "=====================\n";
+/*
 	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
 		if (roam.active_triangles[i].len_p < 3)
-			roam.single_split(roam.active_triangles[i--]);
+			roam.force_split(roam.active_triangles[i--]);
 	}
-//	roam.single_split(roam.active_triangles[0]);
-	print_active_lpts(roam);
+*/
+	size_t iter = 11;
+	for (size_t i = 0; i < iter; i++) {
+		roam.force_split(roam.active_triangles[0]);
+	}
 
-	plot.draw_active_lpts(roam);
-	
 	struct lptcode lpt = roam.active_triangles[3];
 	plot.setColor("#ff0000");
 	plot.draw_triangle(lpt);
 	struct lptcode nbor;
-	neighbor_lpt(&nbor, lpt, 0);
-	plot.setColor("#00ff00");
-	plot.draw_triangle(nbor);
 	neighbor_lpt(&nbor, lpt, 1);
 	plot.setColor("#0000ff");
 	plot.draw_triangle(nbor);
+	struct lptcode parent;
+	parent_lpt(&parent, nbor);
+	plot.setColor("#00ff00");
+	plot.draw_triangle(parent);
+
+	//roam.force_split(roam.active_triangles[3]);
+
+	print_active_lpts(roam);
+	std::cout << "\nnbor:\n";
+	print_lpt(nbor);
+	std::cout << "parent:\n";
+	print_lpt(parent);
+
+	plot.setColor("#000000");
+	plot.draw_active_lpts(roam);
 
 	plot.finish();
 }

@@ -221,12 +221,41 @@ bool neighbor_lpt(struct lptcode *result, const struct lptcode &lpt, int neighbo
 }
 
 bool parent_lpt(struct lptcode *result, const struct lptcode &lpt) {
-	//TODO implement
-	result->len_p = 0;
+        if (lpt.len_p == 0)
+                return false;
 	for (int i = 0; i < DATA_LEN; i++) {
 		result->data[i] = 0;
 	}
-	return true;
+
+        result->len_p = lpt.len_p - 1;
+        int n_orthants = result->len_p / 2;
+	for (int i = 0; i < n_orthants; i++) {
+		int orth_bit_index = 4 + 2 * i;
+		result->data[orth_bit_index / 8] |= (lpt.data[orth_bit_index / 8]
+				& (1 << (orth_bit_index % 8)))
+				| (lpt.data[orth_bit_index / 8]
+				& (1 << (orth_bit_index % 8 + 1)));
+        }
+
+        int childtype = childtype_lpt(lpt);
+
+        if (childtype == 0) {
+		result->data[0] |= get_bit(lpt.data[0], 0)
+			| get_bit(lpt.data[0], 1) << 1
+			| get_bit(lpt.data[0], 2) << 2;
+        } else {
+                if (result->len_p % 2 == 0) {
+			result->data[0] |= get_bit(~lpt.data[0], 0)
+				| get_bit(lpt.data[0], 2) << 1
+				| get_bit(~lpt.data[0], 1) << 2;
+                } else {
+			result->data[0] |= get_bit(lpt.data[0], 0)
+				| get_bit(lpt.data[0], 1) << 1
+				| get_bit(~lpt.data[0], 2) << 2;
+                }
+        }
+
+        return true;
 }
 
 //stores [row1 row2] in the result array whith length 4
