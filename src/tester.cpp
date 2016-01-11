@@ -31,19 +31,36 @@ void print_active_lpts(ROAMImpl &roam) {
 }
 
 
-class Test1 : public ROAMController {
+class Test_Constant : public ROAMController {
 	public:
-	private:
 		int get_target_lod(float x, float y) {
-			if (x > 0 && y > -.4f)
+			return 4;
+		}
+};
+
+class Test_ConstantQuadrant : public ROAMController {
+	public:
+		int get_target_lod(float x, float y) {
+			if (x > 0 && y < 0)
 				return 4;
 			else
 				return 0;
 		}
 };
 
+class Test_Corner : public ROAMController {
+	public:
+		bool needs_split(const struct lptcode &lpt) {
+			float v0[2];
+			float v1[2];
+			float v2[2];
+			get_vertices(v0, v1, v2, lpt);
+			return v2[0] >= 1 && v2[1] >= 1 && 8 > lpt.len_p; //target lod
+		}
+};
+
 int main(int argc, char *argv[]) {
-	Test1 roam;
+	Test_Corner roam;
 	Plot plot("output_plot.html");
 
 	roam.add_base_square();
