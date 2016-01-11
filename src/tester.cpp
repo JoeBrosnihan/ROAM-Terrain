@@ -1,9 +1,13 @@
 
+#include <time.h>
+
 #include "packed_triangle.hpp"
 #include "roam.hpp"
 #include "roam_controller.hpp"
 #include "plot.hpp"
 
+
+#define MAX_TARGET_LOD (MAX_ORTH_LIST_LEN + 1) * 2
 
 using namespace packedlpt;
 
@@ -28,56 +32,53 @@ void print_active_lpts(ROAMImpl &roam) {
 }
 
 
-class Test1 : public ROAMController {
+class Test_Constant : public ROAMController {
 	public:
-	private:
 		int get_target_lod(float x, float y) {
-			if (x > 0 && y > -.4f)
-				return 4;
+			return MAX_TARGET_LOD;
+		}
+};
+
+class Test_ConstantQuadrant : public ROAMController {
+	public:
+		int get_target_lod(float x, float y) {
+			if (x > 0 && y < 0)
+				return MAX_TARGET_LOD;
 			else
 				return 0;
 		}
 };
 
+class Test_Corner : public ROAMController {
+	public:
+		bool needs_split(const struct lptcode &lpt) {
+			float v0[2];
+			float v1[2];
+			float v2[2];
+			get_vertices(v0, v1, v2, lpt);
+			return v2[0] >= 1 && v2[1] >= 1 && MAX_TARGET_LOD > lpt.len_p; //target lod
+		}
+};
+
 int main(int argc, char *argv[]) {
-	Test1 roam;
+	Test_Corner roam;
 	Plot plot("output_plot.html");
 
 	roam.add_base_square();
-/*
-	for (size_t i = 0; i < roam.active_triangles.size(); i++) {
-		if (roam.active_triangles[i].len_p < 3)
-			roam.force_split(roam.active_triangles[i--]);
-	}
-*/
-	size_t iter = 11;
-	for (size_t i = 0; i < iter; i++) {
-		roam.force_split(roam.active_triangles[0]);
-	}
 
-	struct lptcode lpt = roam.active_triangles[3];
-	plot.setColor("#ff0000");
-	plot.draw_triangle(lpt);
-	struct lptcode nbor;
-	neighbor_lpt(&nbor, lpt, 1);
-	plot.setColor("#0000ff");
-	plot.draw_triangle(nbor);
-	struct lptcode parent;
-	parent_lpt(&parent, nbor);
-	plot.setColor("#00ff00");
-	plot.draw_triangle(parent);
+	struct timespec start;
+	clock_gettime(CLOCK_MONOTONIC, &start);	
+	
+	roam.full_split();
+	
+	struct timespec finish;
+	clock_gettime(CLOCK_MONOTONIC, &finish);	
 
-	//roam.force_split(roam.active_triangles[3]);
+	double sec = finish.tv_sec - start.tv_sec + (finish.tv_nsec - start.tv_nsec) / 1000000000.f;
+	std::cout << "t = " << sec << "\n";
 
-	print_active_lpts(roam);
-	std::cout << "\nnbor:\n";
-	print_lpt(nbor);
-	std::cout << "parent:\n";
-	print_lpt(parent);
-
-	plot.setColor("#000000");
 	plot.draw_active_lpts(roam);
-
+	
 	plot.finish();
 }
 
