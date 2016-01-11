@@ -1,10 +1,7 @@
 #include "roam_controller.hpp"
 
-#include <iostream>
-
 
 void ROAMController::add_active_lpt(const struct lptcode &lpt) {
-	std::cout << "adding lpt, needs_split = " << needs_split(lpt) << "\n";
 	if (needs_split(lpt))
 		needs_split_queue.push(lpt);
 	ROAMImpl::add_active_lpt(lpt);
@@ -25,9 +22,7 @@ int ROAMController::get_target_lod(float x, float y) {
 }
 
 void ROAMController::full_split() {
-	std::cout << "full_split()\n";
 	while (!needs_split_queue.empty()) {
-		std::cout << "pop queue\n";
 		if (active_lpts.count(needs_split_queue.front()) != 0)
 			force_split(needs_split_queue.front());
 		needs_split_queue.pop();
